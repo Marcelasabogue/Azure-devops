@@ -21,10 +21,10 @@ terraform {
   }
   backend "remote" {
 		hostname = "app.terraform.io"
-		organization = "CloudQuickLabs"
+		organization = "Marcela"
 
 		workspaces {
-			name = "AzureAKSLabs"
+			name = "mono_devops"
 		}
 	}
 }
