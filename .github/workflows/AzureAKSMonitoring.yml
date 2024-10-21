@@ -1,4 +1,4 @@
-name: Azure AKS Monitroring With Prometheus and Grafana
+name: CI Azure AKS 
 on:
   workflow_dispatch:
 
