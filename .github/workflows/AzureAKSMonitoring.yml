@@ -19,15 +19,15 @@ jobs:
       - name: 'Az CLI login'
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: "693c80fc-a81a-43c5-ab22-7e4ef1fd9ba7"
+          tenant-id: "84c31ca0-ac3b-4eae-ad11-519d80233e6f" 
+          subscription-id: "26918d0b-8b34-4919-846f-d368ee5d23d3"
   
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.2
         with:
           terraform_version: latest
-          cli_config_credentials_token: ${{ secrets.TFC_TOKEN_ID }}
+          cli_config_credentials_token: "F638Q~slf0TI1beKoqBqoWAqHg4AkEXLGZax4cdq"
 
       - name: Terraform Init
         id: init
