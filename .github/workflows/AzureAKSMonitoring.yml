@@ -1,6 +1,6 @@
 name: CI Azure AKS 
 on:
-  workflow_dispatch:
+  [push]
 
 permissions:
       id-token: write
