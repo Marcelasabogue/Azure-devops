@@ -2,6 +2,7 @@
 # 🐒 Junior-DevOps-Engineer-Challenge -🐒
 
 Mono es una plataforma tecnológica que permite a las empresas lanzar productos fintech y mover dinero fácilmente a través de Latam. A medida que Mono continúa creciendo, estamos en la búsqueda de los mejores y más brillantes talentos, como Marcela Sabogal, para construir el futuro de la banca empresarial.
+
 <img src="https://latamlist.com/wp-content/uploads/2023/08/mono.png" alt="Logo mono" width="300"/>
 
 ## Descripción del Desafío 🐒
