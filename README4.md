@@ -3,7 +3,7 @@
 Implementación de un sistema de monitoreo y notificación para el despliegue de la aplicación. Al finalizar el despliegue, se genera una notificación por correo electrónico utilizando Terraform. Además, la aplicación desplegada está configurada para exportar métricas, mediante Grafana y Prometheus, asegurando un monitoreo efectivo del rendimiento y la disponibilidad de la aplicación. 
 
 
-[![Despliegue](./media\videografana.png)](https://youtu.be/rYGsFI3o6AY)
+[![Despliegue](./media/videografana.png)](https://youtu.be/rYGsFI3o6AY)
 
 *(Haz clic en la imagen de arriba para ver un video ilustrativo del proceso)*
 
