@@ -2,7 +2,7 @@
 
 Selección de una aplicación de ejemplo desarrollada en Elixir utilizando el framework Phoenix. Se creó una imagen dockerizada de la aplicación y se generaron los archivos de configuración necesarios para desplegarla en Kubernetes, incluyendo los servicios dependientes. Se aseguró que la aplicación fuera accesible después del despliegue, garantizando una correcta exposición y funcionamiento en el entorno de Kubernetes.       
 
-[![Despliegueapp](\media\appdespl.png)](https://youtu.be/hQEI9WRtkIU)
+[![Despliegueapp](media\appdespl.png)](https://youtu.be/hQEI9WRtkIU)
 
 *(Haz clic en la imagen de arriba para ver un video ilustrativo del proceso)*
 

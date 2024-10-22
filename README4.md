@@ -28,6 +28,6 @@ kubectl port-forward --namespace monitoring svc/prometheus-grafana 8080:80
 ```
 
 
-[![Despliegue](\media\videografana.png)](https://youtu.be/rYGsFI3o6AY)
+[![Despliegue](media\videografana.png)](https://youtu.be/rYGsFI3o6AY)
 
 *(Haz clic en la imagen de arriba para ver un video ilustrativo del proceso)*
