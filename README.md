@@ -1,14 +1,10 @@
 
 # 🐒 DevOps-Project -🐒
 
-
-<img src="https://latamlist.com/wp-content/uploads/2023/08/mono.png" alt="Logo mono" width="300"/>
-
 ## Descripción del Desafío 🐒
  Para este desafío se creó un pipeline de CI/CD que permite desplegar un clúster de Kubernetes en Azure, utilizando una herramienta de Infrastructure as Code (IaC) como Terraform. Se utilizó Grafana y Prometheus para la monitorización de la aplicación, y se implementó el envío de notificaciones por correo electrónico mediante Terraform. Este pipeline también incluye el despliegue de una aplicación de ejemplo desarrollada con Elixir y Phoenix. 
 El proceso se descompuso en pasos específicos, donde se explican las decisiones técnicas consideradas, la implementación realizada y cómo se ejecutó cada fase. La relación entre las herramientas utilizadas en este proyecto se presenta en la siguiente imagen.
 ![Arquitectura](./media/diagrama.png)
-
 
 
 | Paso                                               | Descripción                                                                                                                                                                                                                                                                                   |
