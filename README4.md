@@ -1,37 +1,38 @@
-# Paso 4. Monitoreo/Notificación del despliegue de la aplicación 🐵🙊🙉🙈
+# Step 4. Implementation of a Monitoring and Notification System for Application Deployment
+ 🐵🙊🙉🙈
+# 
+A monitoring and notification system was implemented for the application deployment. Upon completion of the deployment, an email notification is generated using Terraform. Additionally, the deployed application is configured to export metrics through Grafana and Prometheus, ensuring effective monitoring of the application's performance and availability.
 
-Implementación de un sistema de monitoreo y notificación para el despliegue de la aplicación. Al finalizar el despliegue, se genera una notificación por correo electrónico utilizando Terraform. Además, la aplicación desplegada está configurada para exportar métricas, mediante Grafana y Prometheus, asegurando un monitoreo efectivo del rendimiento y la disponibilidad de la aplicación. 
+[![Deployment](./media/videografana.png)](https://youtu.be/rYGsFI3o6AY)
 
+*(Click the image above to view an illustrative video of the process)*
 
-[![Despliegue](./media/videografana.png)](https://youtu.be/rYGsFI3o6AY)
-
-*(Haz clic en la imagen de arriba para ver un video ilustrativo del proceso)*
-
-Para acceder al monitoreo de AKS, sigue estos pasos:
+To access monitoring for AKS, follow these steps:
 
 ```bash
-# 1. Inicia sesión en Azure
+# 1. Log in to Azure
 az login --use-device-code
 
-# 2. Obtener las credenciales de tu clúster AKS
-az aks get-credentials --resource-group "<rg>" --name "<nombre del clúster>"
+# 2. Obtain credentials for your AKS cluster
+az aks get-credentials --resource-group "<rg>" --name "<cluster name>"
 
-# 3. Verificar los pods en el namespace de monitoreo
+# 3. Verify the pods in the monitoring namespace
 kubectl --namespace monitoring get pods -l "release=prometheus"
 
-# 4. Redirigir el puerto para acceder a Prometheus
+# 4. Forward the port to access Prometheus
 kubectl port-forward --namespace monitoring svc/prometheus-kube-prometheus-prometheus 9090
 
-# 5. Redirigir el puerto para acceder a Grafana
+# 5. Forward the port to access Grafana
 kubectl port-forward --namespace monitoring svc/prometheus-grafana 8080:80
 
-# 6. Credenciales de Grafana
-# - Nombre de usuario: admin
-# - Contraseña: password
+# 6. Grafana Credentials
+# - Username: admin
+# - Password: password
+
 ```
-# Notificaciones Terraform
-Se configuraron notificaciones por correo electrónico para alertar sobre eventos en el proceso de ejecución de Terraform en los siguientes estados: "Creado", "Planificación", "Necesita Atención", "Aplicando", "Completado" y "Error".
+# Terraform Notifications
+Email notifications were configured to alert about events in the Terraform execution process in the following states: "Created," "Planning," "Needs Attention," "Applying," "Completed," and "Error."
 
+![Notification](./media/notificacion.png)
+![Email Notification](./media/correonoti.png)
 
-![Notificación](./media/notificacion.png)
-![Notificacióncorreos](./media/correonoti.png)

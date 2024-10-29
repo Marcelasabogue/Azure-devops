@@ -1,119 +1,115 @@
-# Paso 2: Despliegue de Kubernetes 🐵🙊🙉🙈
+# Step 2: Kubernetes Deployment 🐵🙊🙉🙈
 
-Para la implementación de clústeres de Kubernetes en Azure, empleé Terraform creando varios scripts que incluyen la definición de un grupo de recursos con un nombre único generado aleatoriamente, la configuración del clúster de Kubernetes con un grupo de nodos y credenciales de administrador, y la parametrización mediante variables para facilitar ajustes en la configuración. Además, incluí salidas que exponen información clave como certificados y credenciales, y generé un par de claves SSH para la autenticación segura. La configuración de proveedores y el uso de un backend remoto para el estado de Terraform garantizan una gestión eficiente y reproducible de la infraestructura como código.
+For the implementation of Kubernetes clusters on Azure, I used Terraform to create several scripts that include the definition of a resource group with a randomly generated unique name, the configuration of the Kubernetes cluster with a node group and administrator credentials, and parameterization through variables to facilitate adjustments in the configuration. Additionally, I included outputs that expose key information such as certificates and credentials, and generated an SSH key pair for secure authentication. The provider configuration and the use of a remote backend for Terraform state ensure efficient and reproducible management of infrastructure as code.
 
-A continuación, definiré el contenido y la funcionalidad de cada script involucrado en la implementación. Cada uno de estos scripts desempeña un papel crucial en la creación y gestión de la infraestructura, asegurando que todos los componentes estén correctamente configurados y sean interoperables. Desglosaré los scripts de Terraform utilizados para definir los recursos, manejar las credenciales y facilitar la implementación del clúster de Kubernetes en Azure.
+Next, I will define the content and functionality of each script involved in the implementation. Each of these scripts plays a crucial role in creating and managing the infrastructure, ensuring that all components are properly configured and interoperable. I will break down the Terraform scripts used to define resources, handle credentials, and facilitate the deployment of the Kubernetes cluster on Azure.
 
 ### - `main.tf`
 
-Automatización para la creación y configuración de un entorno de Kubernetes en Azure, asegurando que todos los recursos se configuren de manera adecuada y eficiente.
+Automation for creating and configuring a Kubernetes environment on Azure, ensuring that all resources are configured properly and efficiently.
 
-1. **Generación de nombres aleatorios**: Utiliza el recurso `random_pet` para generar un sufijo aleatorio que se usará en el nombre del grupo de recursos y en el nombre del clúster de Kubernetes.
+1. **Random Name Generation**: Uses the `random_pet` resource to generate a random suffix to be used in the name of the resource group and the Kubernetes cluster name.
 
-2. **Creación del grupo de recursos**: Se crea un grupo de recursos en la ubicación especificada, con un nombre que incluye el sufijo aleatorio generado.
+2. **Resource Group Creation**: A resource group is created in the specified location, with a name that includes the generated random suffix.
 
-3. **Configuración del clúster de Kubernetes**: Se define un clúster de Kubernetes que:
-   - Usa la misma ubicación que el grupo de recursos.
-   - Tiene un nombre y un prefijo DNS aleatorio.
-   - Se le asigna una identidad gestionada del sistema para facilitar la interacción segura con otros recursos de Azure.
+3. **Kubernetes Cluster Configuration**: A Kubernetes cluster is defined that:
+   - Uses the same location as the resource group.
+   - Has a random name and DNS prefix.
+   - Is assigned a system-managed identity to facilitate secure interaction with other Azure resources.
 
-4. **Configuración del grupo de nodos**: Se especifica un grupo de nodos con un tamaño de máquina virtual y una cantidad de nodos definidos por variables.
+4. **Node Group Configuration**: A node group is specified with a defined virtual machine size and a number of nodes determined by variables.
 
-5. **Perfil de usuario**: Se establece un perfil de Linux que incluye un nombre de usuario y una clave SSH para acceder al clúster.
+5. **User Profile**: A Linux profile is established that includes a username and an SSH key for accessing the cluster.
 
-6. **Configuración de la red**: Se define el perfil de red del clúster, especificando el complemento de red y el tipo de SKU del balanceador de carga.
+6. **Network Configuration**: The network profile of the cluster is defined, specifying the network plugin and the SKU type of the load balancer.
 
 ### - `outputs.tf`
 
+This script is responsible for exposing critical information about the Azure resources and the Kubernetes cluster configuration, ensuring that sensitive data is adequately protected.
 
-Este script se encarga de exponer información crítica sobre los recursos de Azure y la configuración del clúster de Kubernetes, asegurando que datos sensibles estén adecuadamente protegidos.
+1. **Resource Group Name**:
+   - `resource_group_name`: Returns the name of the created resource group.
 
-1. **Nombre del grupo de recursos**: 
-   - `resource_group_name`: Devuelve el nombre del grupo de recursos creado.
+2. **Kubernetes Cluster Name**:
+   - `kubernetes_cluster_name`: Provides the name of the created Kubernetes cluster.
 
-2. **Nombre del clúster de Kubernetes**: 
-   - `kubernetes_cluster_name`: Proporciona el nombre del clúster de Kubernetes creado.
+3. **Certificates and Keys**:
+   - `client_certificate`: Returns the client certificate for authentication, marked as sensitive to protect the information.
+   - `client_key`: Provides the client key, also sensitive.
+   - `cluster_ca_certificate`: Returns the cluster's certificate authority certificate, sensitive.
+   - `cluster_password`: Provides the cluster password, marked as sensitive.
+   - `cluster_username`: Returns the username to access the cluster, sensitive.
+   - `host`: Provides the address of the cluster host, also sensitive.
 
-3. **Certificados y claves**: 
-   - `client_certificate`: Devuelve el certificado del cliente para autenticación, marcado como sensible para proteger la información.
-   - `client_key`: Proporciona la clave del cliente, también sensible.
-   - `cluster_ca_certificate`: Devuelve el certificado de la autoridad certificadora del clúster, sensible.
-   - `cluster_password`: Proporciona la contraseña del clúster, marcada como sensible.
-   - `cluster_username`: Devuelve el nombre de usuario para acceder al clúster, sensible.
-   - `host`: Proporciona la dirección del host del clúster, también sensible.
-
-4. **Configuración de Kubernetes**:
-   - `kube_config`: Devuelve la configuración completa de Kubernetes (kubeconfig) en un formato crudo, marcado como sensible.
+4. **Kubernetes Configuration**:
+   - `kube_config`: Returns the complete Kubernetes configuration (kubeconfig) in raw format, marked as sensitive.
 
 ### - `providers.tf`
 
- Este script establece el entorno de Terraform para interactuar con Azure, define las versiones requeridas de los proveedores, y configura el almacenamiento remoto del estado en Terraform Cloud.
+This script sets up the Terraform environment to interact with Azure, defines the required versions of the providers, and configures remote state storage in Terraform Cloud.
 
-1. **Versión de Terraform**:
-   - Se establece que se requiere una versión de Terraform mayor o igual a 1.0.
-  
-2. **Proveedores requeridos**:
-   - **azapi**: Proveedor para recursos de Azure API, con una versión de aproximadamente 1.5.
-   - **azurerm**: Proveedor para recursos de Azure Resource Manager, con una versión de aproximadamente 3.0.
-   - **random**: Proveedor para generar recursos aleatorios, con una versión de aproximadamente 3.0.
-   - **time**: Proveedor para gestionar recursos relacionados con el tiempo, con una versión específica de 0.9.1.
+1. **Terraform Version**:
+   - It specifies that a version of Terraform greater than or equal to 1.0 is required.
 
-3. **Backend remoto**:
-   - Se configura el backend remoto en Terraform Cloud (`app.terraform.io`), perteneciente a la organización "Marcela".
-   - Se especifica el workspace llamado "mono_devops" para almacenar el estado de la infraestructura.
+2. **Required Providers**:
+   - **azapi**: Provider for Azure API resources, with a version of approximately 1.5.
+   - **azurerm**: Provider for Azure Resource Manager resources, with a version of approximately 3.0.
+   - **random**: Provider for generating random resources, with a version of approximately 3.0.
+   - **time**: Provider for managing time-related resources, with a specific version of 0.9.1.
 
-4. **Proveedor de Azure**:
-   - Se declara el proveedor `azurerm` y se inicializa con las características predeterminadas.
+3. **Remote Backend**:
+   - Configures the remote backend in Terraform Cloud (`app.terraform.io`), belonging to the "Marcela" organization.
+   - Specifies the workspace named "mono_devops" to store the infrastructure state.
+
+4. **Azure Provider**:
+   - Declares the `azurerm` provider and initializes it with default features.
 
 ### - `ssh.tf`
 
-Este script configura la generación y almacenamiento de un par de claves SSH en Azure, facilitando su uso para conexiones seguras a recursos en la nube.
+This script configures the generation and storage of an SSH key pair in Azure, facilitating its use for secure connections to cloud resources.
 
-1. **Generación de un nombre aleatorio**:
-   - Se utiliza el recurso `random_pet` para crear un nombre único para la clave SSH, con el prefijo "ssh" y sin un separador.
+1. **Random Name Generation**:
+   - The `random_pet` resource is used to create a unique name for the SSH key, with the prefix "ssh" and no separator.
 
-2. **Acción para generar el par de claves SSH**:
-   - El recurso `azapi_resource_action` ejecuta una acción para generar un par de claves SSH en Azure, especificando el tipo de recurso (`Microsoft.Compute/sshPublicKeys@2022-11-01`).
-   - El `resource_id` se refiere al ID del recurso donde se almacenará la clave SSH.
-   - La acción se realiza mediante el método `POST`, y se exportan los valores de salida de la clave pública y privada.
+2. **Action to Generate SSH Key Pair**:
+   - The `azapi_resource_action` resource executes an action to generate an SSH key pair in Azure, specifying the resource type (`Microsoft.Compute/sshPublicKeys@2022-11-01`).
+   - The `resource_id` refers to the ID of the resource where the SSH key will be stored.
+   - The action is performed using the `POST` method, and the public and private key output values are exported.
 
-3. **Creación del recurso de clave SSH**:
-   - Se declara el recurso `azapi_resource` para crear la clave SSH pública en Azure, utilizando el nombre generado aleatoriamente y el grupo de recursos definido anteriormente.
+3. **Creation of the SSH Key Resource**:
+   - Declares the `azapi_resource` resource to create the public SSH key in Azure, using the randomly generated name and the resource group defined earlier.
 
-4. **Salida del script**:
-   - Se define una salida llamada `key_data`, que exporta el valor de la clave pública generada por la acción anterior.
+4. **Script Output**:
+   - Defines an output called `key_data`, which exports the value of the public key generated by the previous action.
 
 ### - `variables.tf`
 
-
-Este script de Terraform define varias variables que se utilizan para configurar recursos en Azure. Estas variables permiten parametrizar la configuración de recursos en Azure, facilitando la reutilización y personalización del script según las necesidades específicas del usuario.
-A continuación se describe cada variable:
+This Terraform script defines several variables that are used to configure resources in Azure. These variables allow parameterization of the Azure resource configuration, facilitating the reuse and customization of the script according to the user's specific needs. Below is a description of each variable:
 
 1. **`resource_group_location`**:
-   - **Tipo**: `string`
-   - **Valor por defecto**: `"eastus"`
-   - **Descripción**: Especifica la ubicación geográfica donde se creará el grupo de recursos.
+   - **Type**: `string`
+   - **Default Value**: `"eastus"`
+   - **Description**: Specifies the geographical location where the resource group will be created.
 
 2. **`resource_group_name_prefix`**:
-   - **Tipo**: `string`
-   - **Valor por defecto**: `"rg"`
-   - **Descripción**: Prefijo del nombre del grupo de recursos que se combina con un ID aleatorio para garantizar que el nombre sea único en la suscripción de Azure.
+   - **Type**: `string`
+   - **Default Value**: `"rg"`
+   - **Description**: Prefix for the resource group name that combines with a random ID to ensure the name is unique in the Azure subscription.
 
 3. **`node_count`**:
-   - **Tipo**: `number`
-   - **Valor por defecto**: `2`
-   - **Descripción**: Cantidad inicial de nodos para el grupo de nodos en el clúster de Kubernetes.
+   - **Type**: `number`
+   - **Default Value**: `2`
+   - **Description**: Initial number of nodes for the node group in the Kubernetes cluster.
 
 4. **`msi_id`**:
-   - **Tipo**: `string`
-   - **Valor por defecto**: `null`
-   - **Descripción**: ID de la Identidad de Servicio Administrado (Managed Service Identity). Se debe establecer este valor si se está ejecutando el ejemplo utilizando la identidad administrada como método de autenticación.
+   - **Type**: `string`
+   - **Default Value**: `null`
+   - **Description**: ID of the Managed Service Identity. This value must be set if the example is run using the managed identity as an authentication method.
 
 5. **`username`**:
-   - **Tipo**: `string`
-   - **Valor por defecto**: `"azureadmin"`
-   - **Descripción**: Nombre de usuario del administrador para el nuevo clúster.
+   - **Type**: `string`
+   - **Default Value**: `"azureadmin"`
+   - **Description**: Administrator username for the new cluster.
 
-
-![Servicioscreador](./media/servicios.png)
+![Services Creator](./media/servicios.png)
 

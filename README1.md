@@ -1,99 +1,100 @@
-# Paso 1: Pipeline de CI/CD 🐵🙊🙉🙈
+# Step 1: CI/CD Pipeline 🐵🙊🙉🙈
+**Configuration of a pipeline in GitHub Actions that automatically runs upon a `push` to the main branch of the repository. This pipeline ensures continuous integration, allowing for automatic code verification and test execution to maintain project quality.**
 
-Configuración de un pipeline en GitHub Actions que se ejecuta automáticamente al hacer `push` a la rama principal del repositorio. Este pipeline asegura la integración continua, permitiendo la verificación automática del código y la ejecución de pruebas para mantener la calidad del proyecto. 
+For automation, two GitHub Actions were used, as observed in the `.github/workflows` folder, where the files `AzureAKS.yml` and `AzureAKSMonitoring.yml` are located.
 
-Para la automatización se emplearon dos GitHub Actions, como se observa en la carpeta `.github/workflows`, donde están los archivos `AzureAKS.yml` y `AzureAKSMonitoring.yml`.
+# First Pipeline `AzureAKS.yml`
 
-# Primer Pipeline `AzureAKS.yml`
+This pipeline is used to create an Azure Kubernetes Service (AKS) cluster using Terraform. Below, each part of the configuration file is explained.
 
-Este pipeline se emplea para crear un clúster de Azure Kubernetes Service (AKS) utilizando Terraform. A continuación, se explica cada parte del archivo de configuración.
+## Workflow Trigger
 
-## Activación del Flujo de Trabajo
+The workflow is triggered by a `push` event in the repository. This means that every time a `push` is made, this pipeline will run.
 
-El flujo de trabajo se activa con un evento de `push` en el repositorio. Esto significa que cada vez que se realice un `push`, se ejecutará este pipeline.
+## Permissions
 
-## Permisos
+The necessary permissions for the workflow are established. Here, the following is allowed:
 
-Se establecen los permisos necesarios para el flujo de trabajo. Aquí se permite:
+- **id-token:** write, to authenticate with Azure.
+- **contents:** read, to access the repository content.
 
-- **id-token:** escritura, para autenticarse con Azure.
-- **contents:** lectura, para acceder al contenido del repositorio.
+## Job Definition
 
-## Definición de Trabajos
+The main job is called `AKS-Cluster-Deployment` and runs in an Ubuntu environment.
 
-El trabajo principal se denomina `AKS-Cluster-Deployment` y se ejecuta en un entorno de Ubuntu.
+## Default Settings
 
-## Configuración Predeterminada
+Commands are configured to run in a specific directory (`AKS`) using the Bash shell.
 
-Se configuran los comandos para que se ejecuten en un directorio específico (`AKS`) utilizando el shell de Bash. 
+## Job Steps
 
-## Pasos del Trabajo
+1. **Checkout the Repository**: The `checkout` action is used to obtain the repository code. This is essential for subsequent steps to access the repository files.
 
-1. **Checkout del Repositorio** Se utiliza la acción `checkout` para obtener el código del repositorio. Esto es esencial para que los siguientes pasos tengan acceso a los archivos del repositorio.
+2. **Login to Azure CLI**: Login to Azure is performed using credentials stored in secrets (in action secrets). This allows the pipeline to interact with Azure resources.
 
-2. **Inicio de Sesión en Azure CLI** Se inicia sesión en Azure utilizando las credenciales almacenadas en secretos (en action secrets). Esto permite que el pipeline interactúe con los recursos de Azure.
+3. **Terraform Configuration**: Terraform is configured with the latest version, and a credentials configuration token stored in secrets is used. This prepares the environment for executing Terraform commands.
 
-3. **Configuración de Terraform** Se configura Terraform con la última versión y se utiliza un token de configuración de credenciales almacenado en los secretos. Esto prepara el entorno para la ejecución de comandos de Terraform.
+4. **Terraform Initialization**: The Terraform environment is initialized, allowing providers to be downloaded and the backend to be configured.
 
-4. **Inicialización de Terraform** Se inicializa el entorno de Terraform, lo que permite que se descarguen los proveedores y se configure el backend.
+5. **Terraform Validation**: The Terraform configuration is validated to ensure there are no syntax or configuration errors.
 
-5. **Validación de Terraform** Se valida la configuración de Terraform para asegurarse de que no hay errores de sintaxis o de configuración.
+6. **Terraform Plan**: A Terraform execution plan is generated. This step shows what will be created, modified, or deleted. If this step fails, it continues with an error state.
 
-6. **Plan de Terraform** Se genera un plan de ejecución de Terraform. Este paso muestra lo que se va a crear, modificar o eliminar. Si este paso falla, se continúa con un estado de error.
+7. **Terraform Plan State**: If the previous step fails, the workflow ends with an error. This ensures that the application does not proceed if there are issues in the plan.
 
-7. **Estado del Plan de Terraform** Si el paso anterior falla, se termina el flujo de trabajo con un error. Esto asegura que no se continúe con la aplicación si hay problemas en el plan.
+8. **Terraform Apply**: The changes defined in the Terraform plan are applied. This creates or updates the infrastructure in Azure according to the specified configuration.
 
-8. **Aplicación de Terraform** Se aplican los cambios definidos en el plan de Terraform. Esto crea o actualiza la infraestructura en Azure según la configuración especificada.
+9. **Terraform Output**: The outputs of Terraform are obtained, which can be used in subsequent steps or to verify that the infrastructure was created correctly.
 
-9. **Salida de Terraform** Se obtienen los outputs de Terraform, que pueden ser utilizados en pasos posteriores o para verificar que la infraestructura se ha creado correctamente.
+10. **Application Deployment**: The AKS cluster credentials are obtained, and the Kubernetes configuration is applied using the file `AKSApp/aks-store-quickstart.yaml`. This deploys the application to the newly created AKS cluster.
 
-10. **Despliegue de la Aplicación** Se obtienen las credenciales del clúster AKS y se aplica la configuración de Kubernetes utilizando el archivo `AKSApp/aks-store-quickstart.yaml` . Esto despliega la aplicación en el clúster AKS recién creado.
+# Second Pipeline `AzureAKSMonitoring.yml`
 
-# Segundo Pipeline `AzureAKSMonitoring.yml`
-Este pipeline está diseñado para gestionar la infraestructura en Azure Kubernetes Service (AKS) utilizando Terraform y Helm. A continuación, se desglosan los pasos clave del proceso para la implementación y monitoreo automatizado:
+This pipeline is designed to manage infrastructure in Azure Kubernetes Service (AKS) using Terraform and Helm. Below, the key steps of the process for automated implementation and monitoring are outlined:
 
-## Descripción del Pipeline
+## Pipeline Description
 
 ### Trigger
-- **Evento de disparo**: El pipeline se activa en cada `push` a la rama del repositorio.
+- **Trigger Event**: The pipeline is activated on each `push` to the branch of the repository.
 
-### Permisos
-- Se especifican permisos para escribir un token de ID y leer el contenido del repositorio.
+### Permissions
+- Permissions are specified to write an ID token and read the repository content.
 
 ### Jobs
-- **Job Principal**: `AKS-Cluster-Monitoring`
-  - Se ejecuta en un entorno de Ubuntu (`ubuntu-latest`).
-  - Configuración predeterminada de shell y directorio de trabajo en `AKS`.
+- **Main Job**: `AKS-Cluster-Monitoring`
+  - Runs in an Ubuntu environment (`ubuntu-latest`).
+  - Default shell configuration and working directory set to `AKS`.
 
-### Pasos del Job
+### Job Steps
 
 1. **Checkout**:
-   - Se utiliza la acción `actions/checkout@v3.1.0` para clonar el repositorio en el entorno de ejecución.
+   - The action `actions/checkout@v3.1.0` is used to clone the repository in the execution environment.
 
-2. **Login a Azure CLI**:
-   - Se autentica en Azure usando `azure/login@v1` con credenciales almacenadas en secretos.
+2. **Login to Azure CLI**:
+   - Authenticates in Azure using `azure/login@v1` with credentials stored in secrets.
 
-3. **Configuración de Terraform**:
-   - Se configura Terraform usando `hashicorp/setup-terraform@v2.0.2`, especificando la versión y el token de configuración.
+3. **Terraform Configuration**:
+   - Terraform is configured using `hashicorp/setup-terraform@v2.0.2`, specifying the version and configuration token.
 
-4. **Inicialización de Terraform**: Se ejecuta `terraform init` para inicializar el entorno de trabajo.
+4. **Terraform Initialization**: `terraform init` is executed to initialize the working environment.
 
-5. **Validación de Terraform**: Se valida la configuración con `terraform validate` para asegurar que no haya errores en la definición.
+5. **Terraform Validation**: The configuration is validated with `terraform validate` to ensure there are no errors in the definition.
 
-6. **Plan de Terraform**: Se genera un plan de implementación con `terraform plan`. Este paso puede fallar sin detener el pipeline debido a `continue-on-error: true`.
+6. **Terraform Plan**: An implementation plan is generated with `terraform plan`. This step can fail without stopping the pipeline due to `continue-on-error: true`.
 
-7. **Verificación del Estado del Plan**: Si el plan falla, se finaliza el job con un código de error.
+7. **Plan State Verification**: If the plan fails, the job is finalized with an error code.
 
-8. **Aplicación de Terraform**: Se aplica el plan de infraestructura con `terraform apply -auto-approve`, creando o modificando recursos en Azure.
+8. **Terraform Apply**: The infrastructure plan is applied with `terraform apply -auto-approve`, creating or modifying resources in Azure.
 
-9. **Salida de Terraform**: Se recuperan y muestran las salidas definidas en la configuración de Terraform usando `terraform output`.
+9. **Terraform Output**: The outputs defined in the Terraform configuration are retrieved and displayed using `terraform output`.
 
-10. **Habilitación de Monitoreo en AKS**:
-    - Se obtienen las credenciales del clúster de AKS.
-    - Se añade el repositorio de Helm para Prometheus.
-    - Se actualizan los repositorios de Helm y se instala la pila de monitoreo de Prometheus en el namespace `monitoring`.
+10. **Enable Monitoring in AKS**:
+    - The AKS cluster credentials are obtained.
+    - The Helm repository for Prometheus is added.
+    - Helm repositories are updated, and the Prometheus monitoring stack is installed in the `monitoring` namespace.
 
-11. **Limpieza**: Se elimina la configuración del kubeconfig con `rm -rf ~/.kube` para evitar problemas de seguridad.
+11. **Cleanup**: The kubeconfig configuration is removed with `rm -rf ~/.kube` to avoid security issues.
+
 
 
 🐵🙊🙉🙈
